@@ -11,6 +11,7 @@ import base64, json, os, re, shutil, subprocess, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 PROJECT = os.path.dirname(HERE)
 SITE = os.path.join(PROJECT, "송쌤과학_2022개정_화학기호와화학식_학습사이트.html")
+INDEX = os.path.join(PROJECT, "index.html")
 OUT = os.path.join(HERE, "out")
 PDF_NAME = "송쌤과학_화학기호와화학식_학습지_4쪽.pdf"
 XLSX_NAME = "송쌤과학_화학기호와화학식_통합정리.xlsx"
@@ -25,7 +26,7 @@ def data_block():
     """사이트 스크립트의 chemistryData 블록. 각 항목: [식/기호, 이름, 핵심(1/0), 다른 이름 목록, 추가 정보]"""
     rows = {
         "elements": [js([e["symbol"], e["name"], int(e["core"]), e["alias"], e["z"]]) for e in ELEMENTS],
-        "molecules": [js([m["formula"], m["name"], int(m["core"]), [], m["kind"]]) for m in MOLECULES],
+        "molecules": [js([m["formula"], m["name"], int(m["core"]), [], m["kind"], int(m["pages"] != "–")]) for m in MOLECULES],
         "ions": [js([i["formula"], i["name"], int(i["core"]), i["alias"]]) for i in IONS],
         "compounds": [js([c["formula"], c["name"], 1, c["alias"], f'{c["cation"]} + {c["anion"]} · {c["ratio"]}', int(c["cation_count"] == c["anion_count"])]) for c in COMPOUNDS],
     }
@@ -69,6 +70,8 @@ if __name__ == "__main__":
     html = replace_between(html, "/* build:data:start", "    /* build:data:end */", data_block())
     html = replace_between(html, "<!-- build:downloads:start", "        <!-- build:downloads:end -->", downloads_block())
     open(SITE, "w", encoding="utf-8").write(html)
+    if os.path.exists(INDEX):                 # GitHub Pages용 index.html 사본도 같은 내용으로 맞춥니다
+        shutil.copy(SITE, INDEX)
     shutil.copy(os.path.join(OUT, "worksheet.pdf"), os.path.join(OUT, PDF_NAME))
     shutil.copy(os.path.join(OUT, "workbook.xlsx"), os.path.join(OUT, XLSX_NAME))
     print(f"사이트 갱신 완료: {os.path.basename(SITE)} ({os.path.getsize(SITE)//1024} KB)")

@@ -102,10 +102,12 @@ for i, m in enumerate(MOLECULES, start=1):
               fonts={0: font(10, False, MUTED), 1: font(12, True, color), 2: font(10, False, MUTED), 3: font(11, False, color), 4: font(10, True, color),
                      5: font(10, True, BLUE if m["core"] else MUTED), 6: pages_font(m["pages"])})
     r += 1
+mol_list = lambda ms: " · ".join(f"{m['name']}({m['formula']})" for m in ms)
 notes(ws, r + 1, [
-    "※ 연노란색 = 교과서 Ⅳ단원에 화학식이 실제로 나오는 물질. 141쪽 = 그림 Ⅳ-3, 153쪽 = 분자의 화학식.",
+    f"※ 연노란색 = 학습 핵심 {core_mol}종(학습 사이트 '교과서·학습 핵심만' 범위). 교과서 확인 쪽수가 적힌 물질은 Ⅳ단원에 화학식이 실제로 나옵니다. 141쪽 = 그림 Ⅳ-3, 153쪽 = 분자의 화학식.",
     "※ 원소(초록): 한 가지 원소로만 이루어진 물질(H₂, O₂, O₃, N₂) / 화합물(남색): 두 가지 이상의 원소로 이루어진 물질. 원자 수는 아래첨자로 씁니다.",
-    "※ 질소(N₂) · 과산화 수소(H₂O₂) · 이산화 황(SO₂) · 이산화 질소(NO₂) · 포도당(C₆H₁₂O₆)은 이 단원에 나오지 않지만 수업에서 자주 다루는 확장 항목입니다.",
+    f"※ 이 단원에 나오지 않지만 수업에서 자주 다루는 물질 — 학습 핵심: {mol_list(m for m in MOLECULES if m['core'] and m['pages'] == '–')}  /  확장: {mol_list(m for m in MOLECULES if not m['core'])}",
+    f"※ 4쪽 학습지(PDF)의 분자식 칸에는 핵심·확장 구분 없이 {len(MOLECULES)}종이 모두 실려 있습니다.",
     "※ '입력용 표기'는 학습 사이트에서 답을 칠 때 쓰는 형태입니다. 숫자는 자동으로 아래첨자가 됩니다. 예) H2O → H₂O",
 ], 8)
 ws.freeze_panes = "C6"
